@@ -311,6 +311,7 @@ public class Graph{
    */
   public boolean isEmpty(){
     return vertices.isEmpty();
-  } 
+  }
+
 
 }

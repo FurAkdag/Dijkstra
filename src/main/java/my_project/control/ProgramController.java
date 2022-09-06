@@ -2,13 +2,6 @@ package my_project.control;
 
 import KAGO_framework.control.ViewController;
 import KAGO_framework.model.abitur.datenstrukturen.*;
-import my_project.model.Ball;
-import my_project.model.GraphNode;
-import my_project.model.Server;
-import my_project.view.InputManager;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 
 /**
  * Ein Objekt der Klasse ProgramController dient dazu das Programm zu steuern. Die updateProgram - Methode wird
@@ -21,14 +14,16 @@ public class ProgramController {
 
     // Referenzen
     private ViewController viewController;  // diese Referenz soll auf ein Objekt der Klasse viewController zeigen. Über dieses Objekt wird das Fenster gesteuert.
+
     /**
      * Konstruktor
      * Dieser legt das Objekt der Klasse ProgramController an, das den Programmfluss steuert.
      * Damit der ProgramController auf das Fenster zugreifen kann, benötigt er eine Referenz auf das Objekt
      * der Klasse viewController. Diese wird als Parameter übergeben.
+     *
      * @param viewController das viewController-Objekt des Programms
      */
-    public ProgramController(ViewController viewController){
+    public ProgramController(ViewController viewController) {
         this.viewController = viewController;
         Graph g = new Graph();
         g.addVertex(new Vertex("A"));
@@ -63,7 +58,7 @@ public class ProgramController {
         g.addEdge(new Edge(g.getVertex("I"), g.getVertex("D"), 12));
         g.addEdge(new Edge(g.getVertex("L"), g.getVertex("D"), 13));
 
-        djikstra(g,"A","L");
+        dijkstra(g, "N", "O");
     }
 
     /**
@@ -76,70 +71,81 @@ public class ProgramController {
 
     /**
      * Aufruf mit jeder Frame
+     *
      * @param dt Zeit seit letzter Frame
      */
-    public void updateProgram(double dt){
+    public void updateProgram(double dt) {
 
     }
 
 
+    public void dijkstra(Graph g, String target, String start) {
+        List<Vertex> allVerticles = g.getVertices();
+        allVerticles.toFirst();
+        while(allVerticles.hasAccess()){
+            Vertex help = allVerticles.getContent();
+            help.setCost(Double.MAX_VALUE);
+            help.setPrev(null);
+            allVerticles.next();
+        }
 
-    public void djikstra(Graph g, String target, String start){
         List<Vertex> gList = new List<>();
         boolean found = false;
-        if(start != null && target != null){
+        if (start != null && target != null) {
             Vertex current = g.getVertex(start);
             current.setCost(0);
-            List<Vertex> neighbours;
-            while(!found){
-                neighbours = g.getNeighbours(current);
-                neighbours.toFirst();
-                while(!neighbours.isEmpty()){
-                    Vertex n = neighbours.getContent();
-                    neighbours.remove();
-                    double newWeight = g.getEdge(current,n).getWeight() + current.getCost();
-                    if(newWeight < current.getCost()){
-                        n.setPrev(current);
-                        n.setCost(newWeight);
-                    }
-                    boolean exists = false;
-                    gList.toFirst();
-                    while(gList.hasAccess()){
-                        if(gList.getContent() == n){
-                            exists = true;
-                        }
-                        gList.next();
-                    }
-                    if(!exists){
-                        gList.append(n);
-                    }
-                }
+            gList.append(current);
+            while (!found && !gList.isEmpty()) {
                 gList.toFirst();
                 current = gList.getContent();
                 gList.next();
-                while(gList.hasAccess()){
-                    if(current.getCost() > gList.getContent().getCost()){
+                while (gList.hasAccess()) { //Find smallest
+                    if (current.getCost() > gList.getContent().getCost()) {
                         current = gList.getContent();
                     }
                     gList.next();
                 }
-                gList.toFirst();
-                while(gList.getContent() != current){
-                    gList.next();
-                }
-                gList.remove();
                 if (current == g.getVertex(target)) {
                     found = true;
+                } else {
+                    gList.toFirst();
+                    while (gList.getContent() != current) { //Get current out of the List
+                        gList.next();
+                    }
+                    gList.remove();
+                    List<Vertex> neighbours = g.getNeighbours(current);
+                    neighbours.toFirst();
+                    while (!neighbours.isEmpty()) { //Neigbour stuff
+                        Vertex n = neighbours.getContent();
+                        neighbours.remove();
+                        if (n.getCost() == Double.MAX_VALUE) { //Add to pList if they are new
+                            gList.append(n);
+                        }
+                        double newWeight = g.getEdge(current, n).getWeight() + current.getCost();
+                        if (newWeight < n.getCost()) { //Update prev and cost if needed
+                            n.setPrev(current);
+                            n.setCost(newWeight);
+                        }
+                    }
                 }
-                }
-            Vertex prev = g.getVertex(target);
-            String path = "Path: ";
-            while(prev != null){
-                path += prev.getID();
-                prev = prev.getPrev();
             }
-            System.out.println(path);
+            if(found) {
+                Vertex prev = g.getVertex(target);
+                String path = "Path: ";
+                double cost = 0;
+                while (prev != null) {
+                    cost += prev.getCost();
+                    path += prev.getID() + " <-- ";
+                    prev = prev.getPrev();
+                }
+                path += "Start";
+                System.out.println(path);
+                System.out.println("Cost: " + cost);
+            }else{
+                System.out.println("No Path found");
+            }
             }
         }
     }
+
 
