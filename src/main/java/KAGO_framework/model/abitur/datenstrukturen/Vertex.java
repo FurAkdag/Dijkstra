@@ -1,5 +1,7 @@
 package KAGO_framework.model.abitur.datenstrukturen;
 
+import my_project.model.GraphNode;
+
 /**
  * <p>
  * Materialien zu den zentralen NRW-Abiturpruefungen im Fach Informatik ab 2018
@@ -20,6 +22,8 @@ public class Vertex{
   //Einmalige ID des Knotens und Markierung
   private String id;
   private boolean mark;
+  private Vertex prev;
+  private double cost;
   
   /**
   * Ein neues Objekt vom Typ Vertex wird erstellt. Seine Markierung hat den Wert false.
@@ -27,6 +31,7 @@ public class Vertex{
   public Vertex(String pID){
     id = pID;
     mark = false;
+    cost = Double.MAX_VALUE;
   }
   
   /**
@@ -49,5 +54,20 @@ public class Vertex{
   public boolean isMarked(){
     return mark;
   }
-  
+
+  public Vertex getPrev() {
+    return prev;
+  }
+
+  public void setPrev(Vertex prev) {
+    this.prev = prev;
+  }
+
+  public double getCost() {
+    return cost;
+  }
+
+  public void setCost(double cost) {
+    this.cost = cost;
+  }
 }
