@@ -58,7 +58,7 @@ public class ProgramController {
         g.addEdge(new Edge(g.getVertex("I"), g.getVertex("D"), 12));
         g.addEdge(new Edge(g.getVertex("L"), g.getVertex("D"), 13));
 
-        dijkstra(g, "N", "O");
+        dijkstra(g, "A", "D");
     }
 
     /**
@@ -80,6 +80,7 @@ public class ProgramController {
 
 
     public void dijkstra(Graph g, String target, String start) {
+        if(g != null){
         List<Vertex> allVerticles = g.getVertices();
         allVerticles.toFirst();
         while(allVerticles.hasAccess()){
@@ -91,7 +92,7 @@ public class ProgramController {
 
         List<Vertex> gList = new List<>();
         boolean found = false;
-        if (start != null && target != null) {
+        if (g.getVertex(start) != null && g.getVertex(target) != null) {
             Vertex current = g.getVertex(start);
             current.setCost(0);
             gList.append(current);
@@ -129,6 +130,7 @@ public class ProgramController {
                     }
                 }
             }
+        }
             if(found) {
                 Vertex prev = g.getVertex(target);
                 String path = "Path: ";
